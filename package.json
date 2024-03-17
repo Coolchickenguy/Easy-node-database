@@ -1,0 +1,21 @@
+{
+  "name": "easynodedatabase",
+  "version": "1.1.0",
+  "description": "An easy database for node",
+  "main": "index.js",
+  "scripts": {
+    "bock": "echo \"Buck buck broook\" && exit 1"
+  },
+  "keywords": [
+    "database"
+  ],
+  "author": "Coolchickenguy",
+  "license": "MIT",
+  "dependencies": {
+    "aes256": "^1.1.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Coolchickenguy/Easy-node-database.git"
+  }
+}
