@@ -47,7 +47,6 @@ location = pathtopath(name,location)
               self = this;
                 console.log(this.location);
               }
-
               #databasedata
               #refreshdata(){
                 this.#databasedata = JSON.parse(fs.readFileSync(this.location,'utf8'));
@@ -76,18 +75,22 @@ location = pathtopath(name,location)
                   #username
                   #password
                   #userdata
+                  #databasedata
+                  #refreshdata(){
+                    this.#databasedata = JSON.parse(fs.readFileSync(self.location,'utf8'));
+                  }
                   #refreshud(){
-                    self.#refreshdata();
-                    this.#userdata = self.#databasedata[this.#username];
+                    this.#refreshdata();
+                    this.#userdata = this.#databasedata[this.#username];
                   }
                   #decript(){
-                    self.#refreshdata();
-                    this.#unencripted = JSON.parse(aes256.decrypt(this.#password, userdata["data"]));
+                    this.#refreshdata();
+                    this.#unencripted = JSON.parse(aes256.decrypt(this.#password, this.#userdata["data"]));
                   }
                   constructor(username, password){
-                    this.#refreshud()
                     this.#username = username;
                     this.#password = password;
+                    this.#refreshud();
                     if (this.#userdata == undefined) {
                       console.log("no acount");
                       return false;
