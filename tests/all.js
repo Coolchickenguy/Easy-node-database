@@ -1,4 +1,4 @@
-var database = require("easynodedatabase");
+var database = require("../index.js");
 database.new("foodata","./databases",true);
 database.get("./databases/foodata").addacount("chicen", "bocker99");
 var data = database.get("./databases/foodata").login("chicen", "bocker99").get();
