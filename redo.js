@@ -78,22 +78,25 @@ location = pathtopath(name,location)
                   #databasedata
                   #refreshdata(){
                     this.#databasedata = JSON.parse(fs.readFileSync(self.location,'utf8'));
+                    return this.#databasedata;
                   }
                   #refreshud(){
                     this.#refreshdata();
                     this.#userdata = this.#databasedata[this.#username];
                   }
-                  #decript(){
+                  #decript(reed){
+                    if(!reed){
                     this.#refreshdata();
+                    }
                     this.#unencripted = JSON.parse(aes256.decrypt(this.#password, this.#userdata["data"]));
+                    return this.#unencripted
                   }
                   constructor(username, password){
                     this.#username = username;
                     this.#password = password;
                     this.#refreshud();
                     if (this.#userdata == undefined) {
-                      console.log("no acount");
-                      return false;
+                      throw new Error("no acount");
                     } else if (this.#userdata.password != sha256(password)) {
                       throw new Error("incorect passowrd");
                     } else if (this.#userdata.password === sha256(password)) {
@@ -106,12 +109,41 @@ location = pathtopath(name,location)
                       }
                     }
                   }
+                  get(){
+                    this.#decript();
+                   // var dbd = this.#databasedata;
+                   var decript = () => {return this.#decript(/*true*/)};
+                   var refresh = () => {return this.#refreshdata()};
+                   var username = this.#username;
+                   var password = this.#password;
+var ph = {
+  set: function (target, key, value) {
+    target = decript();
+    var temp = refresh();
+    console.log(`${key} set to ${value}`);
+    target[key] = value;
+    temp[username]["data"] = aes256.encrypt(password, JSON.stringify(target));
+    fs.writeFileSync(self.location, JSON.stringify(temp));
+    return true;
+  },
+  get: function(...args) {
+    //  target = decript()
+      return Reflect.get(...argz)
+    }
+};
+                    var targetProxy = new Proxy(this.#unencripted, ph);
+                    return targetProxy;
+                  }
                 }(...args)
               }
           
           }(...args)
       }
 }
-//var database = require("./redo.js")
-//database.get("tests/databases/foodata.json").login("chicen", "bocker99")
-//database.get("tests/databases/foodata.json").addacount("chicen", "bocker99");
+/*
+var database = require("./redo.js");
+database.get("tests/databases/foodata.json").login("chicen", "bocker99").get().hi = 1;
+database.get("tests/databases/foodata.json").addacount("chicen", "bocker99");
+var data = database.get("tests/databases/foodata.json").login("chicen", "bocker99").get()
+
+*/
