@@ -128,7 +128,7 @@ var ph = {
   },
   get: function(...args) {
     //  target = decript()
-      return Reflect.get(...argz)
+      return Reflect.get(...args)
     }
 };
                     var targetProxy = new Proxy(this.#unencripted, ph);
