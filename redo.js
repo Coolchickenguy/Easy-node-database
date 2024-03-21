@@ -1,4 +1,3 @@
-
 var fs = require("fs")
 var crypyo = require('crypto');
 var aes256 = require('aes256');
@@ -70,39 +69,42 @@ location = pathtopath(name,location)
                 return [username, password];
               }
               login(...args){
-                return new class user{
-                  #unencripted
-                  #username
-                  #password
-                  #userdata
-                  #databasedata
-                  #refreshdata(){
-                    this.#databasedata = JSON.parse(fs.readFileSync(self.location,'utf8'));
-                    return this.#databasedata;
+                var methods = new class methods{
+                  unencripted
+                  username
+                  password
+                  userdata
+                  databasedata
+                  refreshdata(){
+
+                    this.databasedata = JSON.parse(fs.readFileSync(self.location,'utf8'));
                   }
-                  #refreshud(){
-                    this.#refreshdata();
-                    this.#userdata = this.#databasedata[this.#username];
+                  refreshud(){
+                    this.refreshdata();
+                    this.userdata = this.databasedata[this.username];
                   }
-                  #decript(reed){
+                  decript(reed){
                     if(!reed){
-                    this.#refreshdata();
+                    this.refreshud();
                     }
-                    this.#unencripted = JSON.parse(aes256.decrypt(this.#password, this.#userdata["data"]));
-                    return this.#unencripted
+                    this.unencripted = JSON.parse(aes256.decrypt(this.password, this.userdata["data"]));
+
                   }
+                }
+                return new class user{
+                 
                   constructor(username, password){
-                    this.#username = username;
-                    this.#password = password;
-                    this.#refreshud();
-                    if (this.#userdata == undefined) {
+                    methods.username = username;
+                    methods.password = password;
+                    methods.refreshud();
+                    if (methods.userdata == undefined) {
                       throw new Error("no acount");
-                    } else if (this.#userdata.password != sha256(password)) {
+                    } else if (methods.userdata.password != sha256(password)) {
                       throw new Error("incorect passowrd");
-                    } else if (this.#userdata.password === sha256(password)) {
+                    } else if (methods.userdata.password === sha256(password)) {
                       try {
-                        this.#decript();
-                        console.log(this.#unencripted);
+                        methods.decript();
+                        console.log(methods.unencripted);
                       } catch (err) {
                         console.error(err);
                         return false;
@@ -110,28 +112,28 @@ location = pathtopath(name,location)
                     }
                   }
                   get(){
-                    this.#decript();
+                    methods.decript();
                    // var dbd = this.#databasedata;
-                   var decript = () => {return this.#decript(/*true*/)};
-                   var refresh = () => {return this.#refreshdata()};
-                   var username = this.#username;
-                   var password = this.#password;
-var ph = {
-  set: function (target, key, value) {
-    target = decript();
-    var temp = refresh();
-    console.log(`${key} set to ${value}`);
-    target[key] = value;
-    temp[username]["data"] = aes256.encrypt(password, JSON.stringify(target));
-    fs.writeFileSync(self.location, JSON.stringify(temp));
-    return true;
-  },
-  get: function(...args) {
-    //  target = decript()
-      return Reflect.get(...args)
-    }
-};
-                    var targetProxy = new Proxy(this.#unencripted, ph);
+
+                   var targetProxy = new Proxy(methods.unencripted, {
+                    set: function (target, key, value) {
+                      methods.decript();
+                      console.log(methods.unencripted,"yep")
+                      //var target = methods.unencripted;
+                      console.log(`${key} set to ${value}`);
+                      target[key] = value;
+                      var temp = methods.databasedata;
+                      temp[methods.username]["data"] = aes256.encrypt(methods.password, JSON.stringify(target));
+                      fs.writeFileSync(self.location, JSON.stringify(temp));
+                      console.log(target)
+                      return true;
+                    },
+                    get: function(target, prop, receiver) {
+                      methods.decript()
+                      //var target = methods.unencripted;
+                      return Reflect.get(target, prop, receiver)
+                    }
+                  });
                     return targetProxy;
                   }
                 }(...args)
@@ -144,6 +146,6 @@ var ph = {
 var database = require("./redo.js");
 database.get("tests/databases/foodata.json").login("chicen", "bocker99").get().hi = 1;
 database.get("tests/databases/foodata.json").addacount("chicen", "bocker99");
-var data = database.get("tests/databases/foodata.json").login("chicen", "bocker99").get()
+var data = database.get("tests/databases/foodata.json").login("chicen", "bocker99").get();
 
 */
